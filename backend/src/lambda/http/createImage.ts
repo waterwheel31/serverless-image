@@ -48,21 +48,19 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     return {
         statusCode: 201,
         body: JSON.stringify({
-            imageId: imageId,
-            itemId: itemId,
-            newImage: newImage,
-           
-        })
-    }
-
-    return {
-        statusCode: 201,
-        body: JSON.stringify({
             newImage: newImage,
             uploadUrl: url
         })
     }
 }
+
+function getUploadUrl(imgId: string) {
+    return s3.getSignedUrl('putObject', {
+      Bucket: bucketName,
+      Key: imgId,
+      Expires: parseInt(urlExpiration)
+    })
+  }
 
 async function createImage(itemId: string, imageId: string, event: any) {
     const timestamp = new Date().toISOString()
@@ -97,10 +95,3 @@ async function itemExists(itemId: string){
     return !!result.Item
 }
 
-function getUploadUrl(imageId: string) {
-    return s3.getSignedUrl('putObject', {
-      Bucket: bucketName,
-      Key: imageId,
-      Expires: urlExpiration
-    })
-  }
