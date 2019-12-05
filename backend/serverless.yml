@@ -1,0 +1,143 @@
+service:
+  name: picture-storage
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  #stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    PICTURES_TABLE: pictures2
+    PICTURES_DATA_TABLE: pictures_data
+    PICTURES_S3_BUCKET: serverless-pictures
+    SIGNED_URL_EXPIRATION: 300
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PICTURES_TABLE}
+    
+    - Effect: Allow
+      Action: 
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PICTURES_DATA_TABLE}
+
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.PICTURES_S3_BUCKET}/*
+
+functions:
+  getMyPicture:
+    handler: src/lambda/http/getMyPicture.handler
+    events:
+      - http:
+          method: get
+          path: myPicture
+          cors: true
+
+  postPicture:
+    handler: src/lambda/http/postPicture.handler
+    events:
+      - http:
+          method: post
+          path: myPicture
+          cors: true
+
+  updatePicture:
+    handler: src/lambda/http/updatePicture.handler
+    events:
+      - http:
+          method: put
+          path: myPicture
+          cors: true
+
+  deletePicture:
+    handler: src/lambda/http/deletePicture.handler
+    events:
+      - http:
+          method: delete
+          path: myPicture
+          cors: true
+
+  createImage:
+    handler: src/lambda/http/createImage.handler
+    events:
+      - http:
+          method: post
+          path: image
+          cors: true
+
+resources: 
+  Resources: 
+    PictureDynamoDBTable:
+      Type: AWS::DynamoDB::Table 
+      Properties: 
+        AttributeDefinitions: 
+          - AttributeName: id 
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.PICTURES_TABLE}
+
+    PictureDataDynamoDBTable:
+      Type: AWS::DynamoDB::Table 
+      Properties: 
+        AttributeDefinitions: 
+          - AttributeName: id 
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.PICTURES_DATA_TABLE}
+    
+    AttachmentsBucket: 
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.PICTURES_S3_BUCKET}
+
+    
+        
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.PICTURES_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
+
+            
