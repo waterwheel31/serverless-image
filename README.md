@@ -38,7 +38,7 @@ This is a sample web app using Serverless application, as the capstone project o
 -  install nodeJS 
 -  install "Serverless" framework >  `npm install -g serverless` 
 -  On AWS setting, go to IAM and create a user with "Programmatic access" access type, with "AdministratorAccess"
--  install dependencies > `npm install`
+-  install dependencies > `npm install` in two folders. `/frontend` and `backend`  
 -  Set "Serverless" crednetials > `sls config credentials --provider aws --key (USE YOUR ACCESS KEY) --secret (USE YOUR SECRET KEY) --profile serverless ` 
 -  Deploy the application by serverless >  `sls deploy -v`  (this takes several minutes)
 -  Access to `localhost:3000`, then you can see the web app 
