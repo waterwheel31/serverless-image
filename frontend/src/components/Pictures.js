@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Grid, Menu, Segment, Card, Button, Divider } from 'semantic-ui-react'
+import { Grid, Menu, Segment, Card, Button, Divider, Image } from 'semantic-ui-react'
 import { Link, Route, Router, Switch } from 'react-router-dom'
-import { getPictures } from '../api/picture-api.js'
+import { getPictures, deleteItem } from '../api/picture-api.js'
 import { Item } from './Items.js'
 
 export class Pictures extends React.PureComponent {
@@ -36,10 +36,15 @@ export class Pictures extends React.PureComponent {
             <Card.Group>
                 {this.state.pictures.map(picture =>{
                   return (
-                   <Card >
+                   <Card>
+                     <Image src={picture.imageURL}/>
                      <Card.Content>
-                       <Card.Header> {picture.id}</Card.Header>
-                       <Card.Description> {picture.description}</Card.Description>                      
+                       
+                       <Card.Header> {picture.description}</Card.Header>
+                      
+                       <button onClick={()=> deleteItem({id:picture.id})}>delete</button>
+                
+                                        
                      </Card.Content>           
                    </Card>
                   )
@@ -51,5 +56,6 @@ export class Pictures extends React.PureComponent {
         )
       }
 
+ 
 }
 
