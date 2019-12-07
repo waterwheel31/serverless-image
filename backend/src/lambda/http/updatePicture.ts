@@ -15,9 +15,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         Key: {
             "id": itemId
         },
-        UpdateExpression: "SET description = :description",
+        UpdateExpression: "SET description = :description, imageURL = :imageURL",
         ExpressionAttributeValues:{
-            ":description": parsedBody.description
+            ":description": parsedBody.description,
+            ":imageURL": parsedBody.imageURL
         }
     }
 

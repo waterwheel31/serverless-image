@@ -42,6 +42,7 @@ export class Pictures extends React.PureComponent {
                        
                        <Card.Header> {picture.description}</Card.Header>
                       
+                       <button onClick={()=> deleteItem({id:picture.id})}>edit</button>
                        <button onClick={()=> deleteItem({id:picture.id})}>delete</button>
                 
                                         
