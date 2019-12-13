@@ -3,9 +3,13 @@ import { Grid, Menu, Segment, Card, Button, Divider, Image } from 'semantic-ui-r
 import { Link, Route, Router, Switch } from 'react-router-dom'
 import { getPictures, deleteItem } from '../api/picture-api.js'
 import { Item } from './Items.js'
+import { decode } from 'jsonwebtoken'
+
+interface PicruesProps {
+  auth: Auth
+}
 
 export class Pictures extends React.PureComponent {
-
 
     state: PicturesListState = {
       pictures: []
@@ -14,8 +18,15 @@ export class Pictures extends React.PureComponent {
     async componentDidMount() {
         try {
           
-          const pictures = await getPictures()
+          const jwtToken = await this.props.auth.getIdToken()
+          const decodedJwt = decode(jwtToken)
+          const userID = decodedJwt.sub
+
+          console.log('auth:',userID)
+          const pictures = await getPictures(jwtToken)
+          
           console.log('pictures:', pictures)
+          
           this.setState({
             pictures
           })
@@ -26,11 +37,11 @@ export class Pictures extends React.PureComponent {
     }
 
     render() {
+        const jwtToken = this.props.auth.getIdToken()
         return (
           <div>
             <h2>Pictures</h2>
-
-    
+            
             <Divider clearing />
 
             <Card.Group>
@@ -41,11 +52,9 @@ export class Pictures extends React.PureComponent {
                      <Card.Content>
                        
                        <Card.Header> {picture.description}</Card.Header>
-                      
-                       <button onClick={()=> deleteItem({id:picture.id})}>edit</button>
-                       <button onClick={()=> deleteItem({id:picture.id})}>delete</button>
                 
-                                        
+                       <button onClick={()=> deleteItem(jwtToken, {imageId:picture.imageId})}>delete</button>
+                    
                      </Card.Content>           
                    </Card>
                   )

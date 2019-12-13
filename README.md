@@ -14,23 +14,19 @@ This is a sample web app using Serverless application, as the capstone project o
     2) Users can also delete and edit own pictures 
     3) Users can see only own pictures 
     4) All above requires login, and the login requires Google Auth
-    5) When new image is uploaded, there will be realtime notification to registered Telegram account to the administrator
-    6) Logs can be searched by text
+    5) Logs can be searched by text
 
 ## Libraries/services used for this app  
 
 -  "Serverless" framework - overall management of the application and deployment. Using `aws-nodejs-typescript` template
 -  AWS services 
     - API Gateway - web routing and Websocket gateway 
-    - SNS - invoking multiple events 
     - Lambda - serverless ad-hoc functions   
     - S3   - binary data (image) storage 
     - DynamoDB - NoSQL database
-    - ElasticSearch - text search  
-    - X-Ray - distributed tracing 
+    - Secret Manager - managing secrets
 -  Auth0 - Authentication (login)
 -  React  - Web frontend
--  Telegram - for receiving notification
 -  NodeJS - for developing the whole project
 
 
@@ -40,7 +36,9 @@ This is a sample web app using Serverless application, as the capstone project o
 -  On AWS setting, go to IAM and create a user with "Programmatic access" access type, with "AdministratorAccess"
 -  install dependencies > `npm install` in two folders. `/frontend` and `backend`  
 -  Set "Serverless" crednetials > `sls config credentials --provider aws --key (USE YOUR ACCESS KEY) --secret (USE YOUR SECRET KEY) --profile serverless ` 
+-  Fill `certdata` in `/backend/src/lambda/auth/rs256Auth0Authorizer.ts` with certification data from Auth0
 -  Deploy the application by serverless >  `sls deploy -v`  (this takes several minutes)
+-  Go to `/frontend` directory and run the server by `npm start`
 -  Access to `localhost:3000`, then you can see the web app 
 
 

@@ -1,23 +1,28 @@
-
-
 import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 import * as AWS from 'aws-sdk'
 import * as uuid from 'uuid'
+import { decode } from 'jsonwebtoken'
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const pictureTable = process.env.PICTURES_TABLE
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   
-    const itemId = uuid.v4() 
+    const imageId = uuid.v4() 
     const parsedBody = JSON.parse(event.body)
+    const authorization = event.headers.Authorization
+    const split = authorization.split(' ')
+    const jwtToken = split[1]
+    const userId = decode(jwtToken).sub
+    
 
-    console.log("itemId:", itemId)
+    console.log("imageId:", imageId)
     console.log("parsedBody:", parsedBody)
 
     const newItem = {
-      id: itemId, 
+      imageId: imageId, 
+      userId: userId,
       ...parsedBody
     }
 

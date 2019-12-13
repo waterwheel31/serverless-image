@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Grid, Form, Menu, Segment, Card, Button, Divider } from 'semantic-ui-react'
-import { Link, Route, Router, Switch } from 'react-router-dom'
 import { postPicture, getURL, updatePicture, postToURL } from '../api/picture-api.js'
-import { Item } from './Items.js'
 
 
 interface NewItem {
@@ -67,26 +65,31 @@ export class PostPicture extends React.PureComponent{
     handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault()
 
+    
         try{
             if(!this.state.file){
                 alert("File should be selected")
                 return 
             }
             console.log('handleSubmit')
-            const item = await postPicture({
-                description: this.state.description
+            console.log('auth:',this.props.auth)
+            const jwtToken = await this.props.auth.getIdToken()
+      
+            console.log('got jtwtoken')
+            const item = await postPicture(jwtToken, {
+                description: this.state.description,
             })
 
-            const itemId = item.id
-            console.log(itemId)
-            const res = await getURL({id: itemId}) 
+            const imageId = item.imageId
+            console.log('imageId:',imageId)
+            const res = await getURL({imageId: imageId}) 
     
             const postURL = res.uploadUrl
             const imageURL = res.newImage.imageUrl
             console.log('imageURL:', imageURL, 'postURL:', postURL)
 
-            const res2 = await updatePicture({
-                id: itemId,
+            const res2 = await updatePicture(jwtToken, {
+                imageId: imageId,
                 description: this.state.description,
                 imageURL: imageURL
             })
@@ -95,7 +98,7 @@ export class PostPicture extends React.PureComponent{
 
             const res3 = await postToURL({
                 postURL: postURL,
-                file: this.state.file
+                file: this.state.file,     
             })
 
             console.log('image successfully posted')

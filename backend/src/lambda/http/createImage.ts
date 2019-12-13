@@ -20,31 +20,13 @@ const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   
-    const itemId = JSON.parse(event.body).id
+    const imageId = JSON.parse(event.body).imageId
 
-    /*
-    const validItemId = await itemExists(itemId)
-    if (!validItemId) { 
-        return {
-            statusCode: 404,
-            body: JSON.stringify ({error:'item does not exist'})
-        }
-    }
+    const imageCode = uuid.v4()
+    const newImage = await createImage(imageId, imageCode, event)
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            itemId: itemId,
-        })
-    }
-    */
-
-
-    const imageId = uuid.v4()
-    const newImage = await createImage(itemId, imageId, event)
-
-    const url = getUploadUrl(imageId)
-
+    const url = getUploadUrl(imageCode)
+    
     return {
         statusCode: 201,
         headers : {'Access-Control-Allow-Origin': '*'},
@@ -63,16 +45,16 @@ function getUploadUrl(imgId: string) {
     })
   }
 
-async function createImage(itemId: string, imageId: string, event: any) {
+async function createImage(id: string, imageCode: string, event: any) {
     const timestamp = new Date().toISOString()
     const newImage = JSON.parse(event.body)
   
     const newItem = {
-      itemId,
+      id,
       timestamp,
-      imageId,
+      imageCode,
       ...newImage,
-      imageUrl: `https://${bucketName}.s3.amazonaws.com/${imageId}`
+      imageUrl: `https://${bucketName}.s3.amazonaws.com/${imageCode}`
     }
     console.log('Storing new item: ', newItem)
   
@@ -87,11 +69,11 @@ async function createImage(itemId: string, imageId: string, event: any) {
   }
 
 
-async function itemExists(itemId: string){
+async function itemExists(imageId: string){
     const result = await docClient
         .get({
             TableName: picturesTable,
-            Key: {id: itemId}
+            Key: {id:imageId}
         }).promise()
     return !!result.Item
 }
