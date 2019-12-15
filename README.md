@@ -2,7 +2,7 @@
 
 This is a sample web app using Serverless application, as the capstone project of Udacity Cloud Developer Nanodegree. 
 
-<img src="capture.png" />
+<img src="capture.png" width=400 />
 
 ## Overview of the application
 
