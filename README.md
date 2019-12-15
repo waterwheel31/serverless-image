@@ -1,4 +1,4 @@
-# "Serverless" Personal Picture Storage
+# "Serverless" Personal Picture Uploader
 
 This is a sample web app using Serverless application, as the capstone project of Udacity Cloud Developer Nanodegree. 
 
@@ -6,16 +6,16 @@ This is a sample web app using Serverless application, as the capstone project o
 
 ## Overview of the application
 
--  This is a web application for personal picture storage, using serverless technologies
+-  This is a web application for personal picture uploader, using serverless technologies
 -  As a 'serverless' application
     -  this application is deployed by running a configuration file ('serverless.yml') that describes the specification of the services. Therefore no manual cloud settings is required
     - Also, this runs flexibly, meaning that the app only invoked when being requested and stopped after a while. This significantly minimize the operationg costs close to zero during the downtime (except for database and storage costs)
 - The functions of the app are as below:  
     1) Users can upload pictures on an cloud storage from the web application
-    2) Users can also delete and edit own pictures 
+    2) Users can also delete own pictures 
     3) Users can see only own pictures 
     4) All above requires login, and the login requires Google Auth
-    5) Logs can be searched by text
+    
 
 ## Libraries/services used for this app  
 
